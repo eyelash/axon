@@ -51,6 +51,28 @@ export function text(...texts) {
 	};
 }
 
+export function attribute(name, value) {
+	return {
+		name: name,
+		value: value.get ? value : constant(value),
+		run(parent) {
+			this.element = parent;
+			this.update();
+			this.value.addObserver(this);
+		},
+		update() {
+			this.element[this.name] = this.value.get();
+		},
+		disconnect() {
+			this.value.deleteObserver(this);
+		}
+	};
+}
+
+export function href(value) {
+	return attribute('href', value);
+}
+
 export function onClick(callback) {
 	return {
 		run(parent) {
